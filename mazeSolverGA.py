@@ -14,13 +14,13 @@ class Bot(object):
     
     def __init__(self, dnaSize):
         self.dnaSize = dnaSize
-        self.gene = list()
+        self.dna = list()
         self.distance = 0.
         self.posx = 0
         self.posy = 0
-        self.colour = (255,0,0)
+        self.colour = (255,0,0)             #default colour of bot
         for i in range(self.dnaSize):
-            self.gene.append(np.random.randint(0,4))
+            self.dna.append(np.random.randint(0,4))
     
     def move(self, speedx, speedy):
         self.posx += speedx
@@ -29,18 +29,18 @@ class Bot(object):
 class Environment(object):
     
     def __init__(self):
-        self.width = 800
-        self.height = 800
-        self.nRows = 30
-        self.nColumns = 30
-        self.populationSize = 50
-        self.dnaSize = 200
-        self.bestCopied = 10
-        self.mutationRate = 0.2
-        self.offspringMutationRate = 0.15
-        self.waitTime = 0.1
-        self.slowdownRateOfChange = 0.025
-        self.wallRatio = 0.3
+        self.width = 800                    #width in pixels of the game screen
+        self.height = 800                   #height in pixels of the game screen
+        self.nRows = 30                     #number of rows in our maze
+        self.nColumns = 30                  #number of columns in our maze
+        self.populationSize = 50            #size of the population of bots that try and solve the maze
+        self.dnaSize = 200                  #dna length for bots, every gene is responsible for each move
+        self.bestCopied = 10                #how many best bots we take from our previous generation and mix them
+        self.mutationRate = 0.2             #chances that new bot will be completely mutated
+        self.offspringMutationRate = 0.15   #chances that a single gene will be mutated
+        self.waitTime = 0.1                 #wait time between moves
+        self.slowdownRateOfChange = 0.025   #by how much we change wait time (click s to increase and f to decrease)
+        self.wallRatio = 0.3                #walls to all cells ratio in our maze
         
         self.population = list()
         self.screen = pygame.display.set_mode((self.width, self.height))
@@ -97,19 +97,19 @@ class Environment(object):
     
     def step(self, nAction):
         for bot in self.population:
-            if bot.gene[nAction] == 0:
+            if bot.dna[nAction] == 0:
                 if bot.posy > 0:
                     if self.maze[bot.posy - 1][bot.posx] == 0:
                         bot.move(0, -1)
-            elif bot.gene[nAction] == 1:
+            elif bot.dna[nAction] == 1:
                 if bot.posy < self.nRows - 1:
                     if self.maze[bot.posy + 1][bot.posx] == 0:
                         bot.move(0, 1)
-            elif bot.gene[nAction] == 2:
+            elif bot.dna[nAction] == 2:
                 if bot.posx < self.nColumns - 1:
                     if self.maze[bot.posy][bot.posx + 1] == 0:
                         bot.move(1, 0)
-            elif bot.gene[nAction] == 3:
+            elif bot.dna[nAction] == 3:
                 if bot.posx > 0:
                     if self.maze[bot.posy][bot.posx - 1] == 0:
                         bot.move(-1, 0)
@@ -125,11 +125,11 @@ class Environment(object):
         for i in range(self.dnaSize):
             if np.random.rand() > self.offspringMutationRate:
                 if np.random.randint(0,2) == 0:
-                    offspring.gene[i] = dna1[i]
+                    offspring.dna[i] = dna1[i]
                 else:
-                    offspring.gene[i] = dna2[i]
+                    offspring.dna[i] = dna2[i]
             else:
-                offspring.gene[i] = np.random.randint(0,4)
+                offspring.dna[i] = np.random.randint(0,4)
                     
         return offspring
     
@@ -160,8 +160,8 @@ class Environment(object):
                     p2rnd = np.random.randint(0, self.bestCopied)
                 parent2 = sortedPopulation[p2rnd]
                 
-                dna1 = parent1.gene
-                dna2 = parent2.gene
+                dna1 = parent1.dna
+                dna2 = parent2.dna
             
                 new = self.mix(dna1, dna2)
                 new.colour = (0,0,255)
