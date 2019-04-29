@@ -38,7 +38,7 @@ class Environment(object):
         self.bestCopied = 10                #how many best bots we take from our previous generation and mix them
         self.mutationRate = 0.2             #chances that new bot will be completely mutated
         self.offspringMutationRate = 0.15   #chances that a single gene will be mutated
-        self.waitTime = 0.1                 #wait time between moves
+        self.waitTime = 0.1                 #wait time in seconds between moves
         self.slowdownRateOfChange = 0.025   #by how much we change wait time (click s to increase and f to decrease)
         self.wallRatio = 0.3                #walls to all cells ratio in our maze
         
